@@ -21,19 +21,25 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Set up Android SDK
+      - name: Configure Android SDK
         run: |
-          echo "ANDROID_HOME=$HOME/android" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/android" >> $GITHUB_ENV
-          mkdir -p $HOME/android
-          cd $HOME/android
-          curl -sS https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
-          unzip -q cmdline-tools.zip -d cmdline-tools-tmp
-          mkdir -p cmdline-tools/latest
-          mv cmdline-tools-tmp/cmdline-tools/* cmdline-tools/latest/
-          rm -rf cmdline-tools-tmp cmdline-tools.zip
-          export PATH=$PATH:$HOME/android/cmdline-tools/latest/bin
-          yes | sdkmanager --sdk_root=$HOME/android "platform-tools" "build-tools;35.0.0" "platforms;android-35" > /dev/null
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          SDKMANAGER=$(find /usr/local/lib/android/sdk -name sdkmanager -type f 2>/dev/null | head -1)
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager not found, installing..."
+            mkdir -p $HOME/android/cmdline-tools
+            curl -sS https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdline-tools.zip
+            unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools-tmp
+            mkdir -p /tmp/android/cmdline-tools/latest
+            mv /tmp/cmdline-tools-tmp/cmdline-tools/* /tmp/android/cmdline-tools/latest/
+            SDKMANAGER=/tmp/android/cmdline-tools/latest/bin/sdkmanager
+            echo "ANDROID_HOME=/tmp/android" >> $GITHUB_ENV
+            echo "ANDROID_SDK_ROOT=/tmp/android" >> $GITHUB_ENV
+          fi
+          echo "Using sdkmanager: $SDKMANAGER"
+          yes | $SDKMANAGER --licenses 2>&1 | head -5
+          $SDKMANAGER --install "platform-tools" "build-tools;35.0.0" "platforms;android-35" 2>&1 | tail -5
         shell: bash
 
       - name: Cache Gradle
