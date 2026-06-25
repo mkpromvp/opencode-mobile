@@ -7,11 +7,15 @@ import androidx.navigation.compose.composable
 import com.opencode.mobile.data.PreferencesManager
 import com.opencode.mobile.ui.screens.chat.ChatScreen
 import com.opencode.mobile.ui.screens.connect.ConnectScreen
+import com.opencode.mobile.ui.screens.local.LocalModeScreen
+import com.opencode.mobile.ui.screens.scan.ScanScreen
 import com.opencode.mobile.ui.screens.sessions.SessionsScreen
 import com.opencode.mobile.ui.screens.settings.SettingsScreen
 
 object Routes {
     const val CONNECT = "connect"
+    const val SCAN = "scan"
+    const val LOCAL = "local"
     const val SESSIONS = "sessions"
     const val CHAT = "chat/{sessionId}"
     const val SETTINGS = "settings"
@@ -32,7 +36,27 @@ fun AppNavGraph(
                     navController.navigate(Routes.SESSIONS) {
                         popUpTo(Routes.CONNECT) { inclusive = true }
                     }
-                }
+                },
+                onScanClick = { navController.navigate(Routes.SCAN) },
+                onLocalClick = { navController.navigate(Routes.LOCAL) }
+            )
+        }
+        composable(Routes.SCAN) {
+            ScanScreen(
+                onScanResult = { url ->
+                    navController.popBackStack()
+                    navController.currentBackStackEntry?.savedStateHandle?.set("scanned_url", url)
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.LOCAL) {
+            LocalModeScreen(
+                onUseLocal = { url ->
+                    navController.popBackStack()
+                    navController.currentBackStackEntry?.savedStateHandle?.set("scanned_url", url)
+                },
+                onBack = { navController.popBackStack() }
             )
         }
         composable(Routes.SESSIONS) {
@@ -43,7 +67,7 @@ fun AppNavGraph(
                 },
                 onDisconnect = {
                     navController.navigate(Routes.CONNECT) {
-                        popUpTo(Routes.SESSIONS) { inclusive = true }
+                        popUpTo(Routes.CONNECT) { inclusive = true }
                     }
                 }
             )
