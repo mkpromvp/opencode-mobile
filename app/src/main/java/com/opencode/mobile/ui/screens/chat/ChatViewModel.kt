@@ -59,7 +59,7 @@ class ChatViewModel(
         loadSession()
     }
 
-    private fun loadSession() {
+    fun loadSession() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingHistory = true, error = null) }
             try {

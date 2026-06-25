@@ -167,7 +167,7 @@ fun ChatScreen(
                             color = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.height(12.dp))
-                        Button(onClick = { loadSession() }) {
+                        Button(onClick = { viewModel.loadSession() }) {
                             Text("Retry")
                         }
                     }

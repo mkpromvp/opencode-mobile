@@ -165,7 +165,7 @@ suspend fun Call.await(): Response {
             }
             override fun onFailure(call: Call, e: IOException) {
                 if (continuation.isCancelled) return
-                continuation.resumeWithException(e)
+                continuation.resumeWith(Result.failure(e))
             }
         })
         continuation.invokeOnCancellation {
