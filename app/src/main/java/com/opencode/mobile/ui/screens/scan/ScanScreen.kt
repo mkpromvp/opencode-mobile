@@ -32,7 +32,6 @@ import com.google.zxing.MultiFormatReader
 import com.google.zxing.NotFoundException
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.RGBLuminanceSource
-import java.nio.ByteBuffer
 import java.util.concurrent.Executors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -166,7 +165,7 @@ fun CameraPreview(
                     val bitmap = imageProxyToBitmap(imageProxy)
                     if (bitmap != null) {
                         try {
-                            val source = RGBLuminanceSource(bitmap.first, bitmap.second, bitmap.third)
+                            val source = RGBLuminanceSource(bitmap.width, bitmap.height, bitmap.pixels)
                             val binarizer = HybridBinarizer(source)
                             val binaryBitmap = BinaryBitmap(binarizer)
                             val result = MultiFormatReader().decode(binaryBitmap)
@@ -199,7 +198,7 @@ fun CameraPreview(
 data class QrImageData(val width: Int, val height: Int, val pixels: IntArray)
 
 fun imageProxyToBitmap(imageProxy: ImageProxy): QrImageData? {
-    val buffer: ByteBuffer? = imageProxy.planes[0].buffer ?: return null
+    val buffer = imageProxy.planes[0].buffer ?: return null
     val bytes = ByteArray(buffer.remaining())
     buffer.get(bytes)
     val width = imageProxy.width

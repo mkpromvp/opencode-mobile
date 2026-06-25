@@ -29,9 +29,11 @@ fun AppNavGraph(
     preferencesManager: PreferencesManager
 ) {
     NavHost(navController = navController, startDestination = Routes.CONNECT) {
-        composable(Routes.CONNECT) {
+        composable(Routes.CONNECT) { backStackEntry ->
+            val scannedUrl = backStackEntry.savedStateHandle.get<String>("scanned_url")
             ConnectScreen(
                 preferencesManager = preferencesManager,
+                scannedUrl = scannedUrl,
                 onConnected = {
                     navController.navigate(Routes.SESSIONS) {
                         popUpTo(Routes.CONNECT) { inclusive = true }

@@ -27,6 +27,7 @@ fun ConnectScreen(
     onConnected: () -> Unit,
     onScanClick: () -> Unit = {},
     onLocalClick: () -> Unit = {},
+    scannedUrl: String? = null,
     viewModel: ConnectViewModel = viewModel(
         factory = object : androidx.lifecycle.ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -41,13 +42,9 @@ fun ConnectScreen(
     var discoveredServers by remember { mutableStateOf<List<DiscoveredServer>>(emptyList()) }
     var isDiscovering by remember { mutableStateOf(false) }
 
-    val savedStateHandle = androidx.navigation.compose.currentBackStackEntryAsState().value?.savedStateHandle
-    LaunchedEffect(savedStateHandle) {
-        savedStateHandle?.get<String>("scanned_url")?.let { url ->
-            if (!url.isNullOrBlank()) {
-                viewModel.updateServerUrl(url)
-                savedStateHandle["scanned_url"] = null
-            }
+    LaunchedEffect(scannedUrl) {
+        if (!scannedUrl.isNullOrBlank()) {
+            viewModel.updateServerUrl(scannedUrl)
         }
     }
 
