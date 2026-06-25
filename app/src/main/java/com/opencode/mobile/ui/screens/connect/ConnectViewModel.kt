@@ -23,18 +23,12 @@ class ConnectViewModel(private val preferencesManager: PreferencesManager) : Vie
 
     init {
         viewModelScope.launch {
-            preferencesManager.serverUrl.collect { url ->
-                _uiState.update { it.copy(serverUrl = url) }
-            }
-        }
-        viewModelScope.launch {
-            preferencesManager.username.collect { user ->
-                _uiState.update { it.copy(username = user) }
-            }
-        }
-        viewModelScope.launch {
-            preferencesManager.password.collect { pass ->
-                _uiState.update { it.copy(password = pass) }
+            _uiState.update {
+                it.copy(
+                    serverUrl = preferencesManager.serverUrl.first(),
+                    username = preferencesManager.username.first(),
+                    password = preferencesManager.password.first()
+                )
             }
         }
     }
